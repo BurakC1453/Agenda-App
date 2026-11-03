@@ -1,0 +1,12 @@
+# .gitignore for .NET
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.db
+*.sqlite
+*.sqlite3
+*.log
