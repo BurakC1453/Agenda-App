@@ -1,0 +1,29 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repositoriyi Klonla
+      uses: actions/checkout@v4
+
+    - name: .NET SDK Kurulumu
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Bağımlılıkları Yükle (Restore)
+      run: dotnet restore
+
+    - name: Projeyi Derle (Build)
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Otomatik Testleri Çalıştır (Test)
+      run: dotnet test --no-build --configuration Release --verbosity normal
