@@ -10,13 +10,20 @@ namespace Core.Persistence;
 /// </summary>
 public class AppDbContext : DbContext
 {
+    public AppDbContext() { }
+
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
     // Notlar tablosu
     public DbSet<Note> Notes => Set<Note>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Uygulama klasöründe 'agenda.db' adında SQLite veritabanı dosyası oluşturur
-        optionsBuilder.UseSqlite("Data Source=agenda.db");
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Uygulama klasöründe 'agenda.db' adında SQLite veritabanı dosyası oluşturur
+            optionsBuilder.UseSqlite("Data Source=agenda.db");
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,3 +34,4 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Note>().HasQueryFilter(n => !n.IsDeleted);
     }
 }
+
