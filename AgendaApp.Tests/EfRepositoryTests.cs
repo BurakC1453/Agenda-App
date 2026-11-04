@@ -60,9 +60,34 @@ public class EfRepositoryTests : IDisposable
         Assert.Empty(todos);
     }
 
+    [Fact]
+    public void GeneratePhysicalDatabaseFileForInspection()
+    {
+        // Bu test, proje klasöründe fiziksel bir 'agenda.db' dosyası oluşturur 
+        // ve içine örnek bir Not / Todo ekler ki DB Browser ile inceleyebilesin.
+        var dbPath = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.Parent!.FullName, "agenda.db");
+        
+        // Eğer eski varsa silip yeniden oluşturalım
+        if (File.Exists(dbPath)) File.Delete(dbPath);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlite($"Data Source={dbPath}")
+            .Options;
+
+        using var db = new AppDbContext(options);
+        db.Database.EnsureCreated();
+
+        db.Notes.Add(new Note { Title = "Merhaba Dünya", Content = "Bu fiziksel SQLite dosyasıdır." });
+        db.TodoItems.Add(new TodoItem { Title = "Örnek Görev", Description = "DB Browser ile inceleniyor", Priority = 2 });
+        db.SaveChanges();
+
+        Assert.True(File.Exists(dbPath));
+    }
+
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
         _context.Dispose();
     }
 }
+
